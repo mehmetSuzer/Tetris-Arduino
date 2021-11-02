@@ -9,12 +9,12 @@
  * If we used 32x16 byte matrix to store the table values,
  * We would use 512 bytes which correspond to 25 percent of the memory
  * There would not be enough space for functions to run
- * For instance, the display wouldnt start
+ * For instance, the display wouldn't start
  * 
  * To eliminate this problem, I used bitwise operations
  * Since table only store 4 different values (0,1,2,3)
  * 2 bits are enough to store them, which is one forth of a byte
- * I declared the game table as 32x4 byte 2D array
+ * I initialised the game table as 32x4 byte 2D array
  * As a result, I used only 128 bytes to store the table, not 512 bytes
  * 
  * To get a value and write to the table, 2 functions are defined
@@ -66,7 +66,7 @@ Adafruit_SSD1306 display(SCREEN_HEIGHT, SCREEN_WIDTH, &Wire, OLED_RESET);
 // You can shift the block 2 units, while it falls one unit
 #define SHIFT_TO_FALL_RATE 2
 
-// After you rotate the block, rotate function is blocked for 3 iterations of the game loop
+// After you rotate the block, rotate function is blocked for 3 iterations of the game loop.
 // To keep the block duration constant, rate doubles when quick falling is active
 #define ROTATE_COUNT_MAX 3
 #define QUICK_ROTATE_COUNT_MAX 6
@@ -77,7 +77,7 @@ Adafruit_SSD1306 display(SCREEN_HEIGHT, SCREEN_WIDTH, &Wire, OLED_RESET);
 #define QUICK_DELAY 20
 
 // Block structure
-// Blocks are formed by 4 4x4 squares
+// Blocks are formed by 4 4x4 pixels squares
 typedef struct {
   byte xValues[4]; 
   byte yValues[4];
@@ -108,7 +108,8 @@ void setup() {
   // Clear display and set the text size and color
   display.clearDisplay();
   display.setTextSize(2); // Draw 2X scale text
-  display.setTextColor(WHITE);
+  display.setTextColor(WHITE); // If the screen supports only one color, then there will be no change,
+                               // Which is the case in my setup
 
   // Write TETRIS on the screen
   display.setCursor(15, 30);
@@ -137,7 +138,7 @@ void setup() {
 void loop() {
   check_if_block_sits();
 
-  // If block havent sit on the bottom wall or another block, then it falls
+  // If the block havent sit on the bottom wall or another block, then it falls
   // If not, check if the game is over
   if (currBlock->falling) {
     fallCount++;
@@ -302,14 +303,14 @@ void draw_table() {
 }
 
 
-// Clear the data of the falling block from the table
+// Clear the falling block from the table
 void clear_falling_block() {
   for (int i = 0; i < 4; i++)
     write_table(currBlock->yValues[i], currBlock->xValues[i], EMPTY);
 }
 
 
-// Add the data of the block to the table
+// Add the block to the table
 void add_falling_block() {
   for (int i = 0; i < 4; i++)
     write_table(currBlock->yValues[i], currBlock->xValues[i], FALLING_BLOCK);
@@ -516,7 +517,7 @@ boolean rotate() {
       }
   }
   // If it collides with walls or another block after the rotation,
-  // Then write the previous values back
+  // Then dont rotate and write the previous values back
   if (there_is_collusion()) {
     for (int i = 0; i < 4; i++) {
       currBlock->xValues[i] = initial_xValues[i];
